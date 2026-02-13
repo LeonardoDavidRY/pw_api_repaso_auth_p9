@@ -25,7 +25,8 @@ public class AuthResource {
     @Produces(MediaType.APPLICATION_JSON) 
     public Response token(
             @QueryParam("user") String user,
-            @QueryParam("password") String password) {
+            @QueryParam("password") String password,
+            @QueryParam("role") String customRole) {
 
         // Validar credenciales contra la base de datos
         Usuario usuario = authService.validarCredenciales(user, password);
@@ -36,7 +37,10 @@ public class AuthResource {
                     .build();
         }
         
-        String role = usuario.getRol();
+        // Usar el rol proporcionado en el parámetro, o el del usuario si no se proporciona
+        String role = (customRole != null && !customRole.trim().isEmpty()) 
+                        ? customRole.trim() 
+                        : usuario.getRol();
 
         String issuer = "repaso-auth";
         long ttl = 3600;
